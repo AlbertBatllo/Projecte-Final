@@ -437,7 +437,6 @@ server.send(200, "text/html", HTML);
 
 Enllaç del video de youtube de la presentació:
 
-```
 video: https://www.youtube.com/watch?v=GqsDBOWtVCQ
 
 
