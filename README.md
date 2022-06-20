@@ -9,10 +9,10 @@ El nostre projecte consisteix en el funcionament d'una porta, la qual té les se
 - Escriure pel display si la targeta es correcta o si no // Albert
 - Que el "conserge" pugui obrir des de dins // Sonia
 
-# Diagrama de blocs
+## Diagrama de blocs
+![image](https://user-images.githubusercontent.com/100155905/174574096-9079f234-eeac-4f60-aeb1-3634d79fb4b6.png)
 
-
-# Esquema de pins
+## Esquema de pins
 
 
 # Codi
