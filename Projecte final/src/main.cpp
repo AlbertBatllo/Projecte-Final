@@ -7,22 +7,32 @@
  
 // Wifi
 #include <WiFi.h>
-const char* ssid = "iPhone de Sonia";
-const char* password = "sonia123";
+const char* ssid = "iPhone";
+const char* password = "ajajaj222";
 
 // Pagina web
 #include <WebServer.h>
 WebServer server(80);
  
 // Zumbador
-#include <EasyBuzzer.h>
+#include <FS.h>
+#include <SD.h>
+#define BUZZER 15
+
+//Display
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
  
 // Variables
 int ledblanc = 12;
 int ledverd = 13;
 int ledvermell = 14;
 bool correcte = true;
-int zumbador = 2;
+int zumbador = 15;
 MFRC522 mfrc522(SS_PIN, RST_PIN);
  
 // Funciones
@@ -33,7 +43,7 @@ void DENEGADO ();
 void handle_root (void); // Pagina web
 
 void setup() {
-  Serial.begin(115200); //Iniciamos la comunicación serial
+  Serial.begin(9600); //Iniciamos la comunicación serial
   SPI.begin(); //Iniciamos el Bus SPI
   mfrc522.PCD_Init(); // Iniciamos el MFRC522
   Serial.println("Lectura del UID");
@@ -42,10 +52,10 @@ void setup() {
   pinMode(ledverd, OUTPUT);
   pinMode(ledvermell, OUTPUT);
   pinMode (21, INPUT_PULLUP); // boton para abrir la puerta
-  pinMode (15, INPUT_PULLUP); // timbre
-  pinMode (2, OUTPUT); // zumbador
+  pinMode (5, INPUT_PULLUP); // timbre
+  pinMode (BUZZER, OUTPUT); // zumbador
   // Zumbador
-  EasyBuzzer.setPin(zumbador);
+  digitalWrite(BUZZER,HIGH);
   // Wifi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -57,6 +67,18 @@ void setup() {
   // Pagina web
   server.begin();
   server.on("/", handle_root);
+  //Display
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println("SSD1306 allocation failed");
+    for(;;);
+  }
+
+  delay(2000);
+  display.clearDisplay();
+
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 10);
 }
 
 byte Usuario1[4]= {0x50, 0x60, 0x13, 0x4E} ; //código del usuario 1
@@ -95,8 +117,9 @@ void loop() {
 }
 // Esta funcion simula un timbre
 void PICAR (){
-  EasyBuzzer.beep (1000, 900000); // frequencia en Hz, duracion del pitido en ms
-  EasyBuzzer.stopBeep();
+  digitalWrite(BUZZER,HIGH);
+  delay(1000);
+  digitalWrite(BUZZER,LOW);
 }
 // Esta función encendera el led verde y la pagina web
 void PASA (){
@@ -104,8 +127,14 @@ void PASA (){
   digitalWrite(ledverd, HIGH);
   delay(500);               // el deixem ences un moment
   digitalWrite(ledverd, LOW);
+  // Escribim pel display
   Serial.println("Targeta ACEPTADA");
-  server.handleClient(); // pag web
+  display.println("Bienvenido!");
+  display.display();
+   delay(4000);
+  display.clearDisplay(); 
+  // pag web 
+  server.handleClient(); 
 }
 void COMPARAR(){
   correcte = true;
@@ -126,6 +155,11 @@ void DENEGADO (){
   // Terminamos la lectura de la tarjeta actual
   mfrc522.PICC_HaltA();
  Serial.println("Targeta DENEGADA");
+ // Escribim pel display
+ display.println("Targeta DENEGADA");
+ display.display();
+ delay(6000);
+  display.clearDisplay(); 
 }
 
 String HTML ="<!DOCTYPE html>\
