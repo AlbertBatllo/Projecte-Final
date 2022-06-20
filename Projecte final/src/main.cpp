@@ -84,7 +84,7 @@ void setup() {
 byte Usuario1[4]= {0x50, 0x60, 0x13, 0x4E} ; //código del usuario 1
 
 void loop() {
-  int timbre = digitalRead (15);
+  int timbre = digitalRead (5);
   int boto = digitalRead (21);
   // Comprobamos si los botones estan presionados y llamamos a sus respectivas funciones
   if (timbre==LOW){
