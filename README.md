@@ -5,16 +5,15 @@ El nostre projecte consisteix en el funcionament d'una porta, la qual té les se
 - Llegir targetes // Albert i Sonia
 - Comparar-les amb la nostra i encendre els leds // Albert i Sonia
 - Si la targeta és correcta genera una pàgina web on apareix qui entra i on viu // Sonia
-- Poder picar un timbre i que s'encengui un zumbador// Sonia
+- Poder picar un timbre i que s'encengui un zumbador // Albert
+- Escriure pel display si la targeta es correcta o si no // Albert
 - Que el "conserge" pugui obrir des de dins // Sonia
 
 # Diagrama de blocs
 
-![Captura de Pantalla 2022-06-06 a les 13 17 43](https://user-images.githubusercontent.com/100155905/172151261-b4eb2bba-bfff-48c8-b642-dee77c2bfdaf.png)
 
 # Esquema de pins
 
-![Esquema de pins](https://user-images.githubusercontent.com/100155905/172151389-0a046371-8d98-4d78-9a28-fb0a503f7ebe.jpeg)
 
 # Codi
 
@@ -28,15 +27,25 @@ El nostre projecte consisteix en el funcionament d'una porta, la qual té les se
  
 // Wifi
 #include <WiFi.h>
-const char* ssid = "iPhone de Sonia";
-const char* password = "sonia123";
+const char* ssid = "iPhone";
+const char* password = "ajajaj222";
 
 // Pagina web
 #include <WebServer.h>
 WebServer server(80);
  
 // Zumbador
-#include <EasyBuzzer.h>
+#include <FS.h>
+#include <SD.h>
+#define BUZZER 2
+
+//Display
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
  
 // Variables
 int ledblanc = 12;
@@ -54,7 +63,7 @@ void DENEGADO ();
 void handle_root (void); // Pagina web
 
 void setup() {
-  Serial.begin(115200); //Iniciamos la comunicación serial
+  Serial.begin(9600); //Iniciamos la comunicación serial
   SPI.begin(); //Iniciamos el Bus SPI
   mfrc522.PCD_Init(); // Iniciamos el MFRC522
   Serial.println("Lectura del UID");
@@ -64,9 +73,9 @@ void setup() {
   pinMode(ledvermell, OUTPUT);
   pinMode (21, INPUT_PULLUP); // boton para abrir la puerta
   pinMode (15, INPUT_PULLUP); // timbre
-  pinMode (2, OUTPUT); // zumbador
+  pinMode (BUZZER, OUTPUT); // zumbador
   // Zumbador
-  EasyBuzzer.setPin(zumbador);
+  digitalWrite(BUZZER,HIGH);
   // Wifi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -78,6 +87,18 @@ void setup() {
   // Pagina web
   server.begin();
   server.on("/", handle_root);
+  //Display
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println("SSD1306 allocation failed");
+    for(;;);
+  }
+
+  delay(2000);
+  display.clearDisplay();
+
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 10);
 }
 
 byte Usuario1[4]= {0x50, 0x60, 0x13, 0x4E} ; //código del usuario 1
@@ -116,8 +137,9 @@ void loop() {
 }
 // Esta funcion simula un timbre
 void PICAR (){
-  EasyBuzzer.beep (1000, 900000); // frequencia en Hz, duracion del pitido en ms
-  EasyBuzzer.stopBeep();
+  digitalWrite(BUZZER,HIGH);
+  delay(1000);
+  digitalWrite(BUZZER,LOW);
 }
 // Esta función encendera el led verde y la pagina web
 void PASA (){
@@ -125,8 +147,14 @@ void PASA (){
   digitalWrite(ledverd, HIGH);
   delay(500);               // el deixem ences un moment
   digitalWrite(ledverd, LOW);
+  // Escribim pel display
   Serial.println("Targeta ACEPTADA");
-  server.handleClient(); // pag web
+  display.println("Bienvenido!");
+  display.display();
+   delay(4000);
+  display.clearDisplay(); 
+  // pag web 
+  server.handleClient(); 
 }
 void COMPARAR(){
   correcte = true;
@@ -147,6 +175,11 @@ void DENEGADO (){
   // Terminamos la lectura de la tarjeta actual
   mfrc522.PICC_HaltA();
  Serial.println("Targeta DENEGADA");
+ // Escribim pel display
+ display.println("Targeta DENEGADA");
+ display.display();
+ delay(6000);
+  display.clearDisplay(); 
 }
 
 String HTML ="<!DOCTYPE html>\
@@ -183,7 +216,7 @@ Primer li hem afegit les llibreries necessaries per a cada component:
 ```
 
 
-Les llibreries necessaries per utilitzar el lector eren la SPI, ja que es el canal al que esta connectat i la 'MFRC522'. També hem definit els pins del RST i el SS.
+Les llibreries necessaries per utilitzar el lector eren la SPI, ja que es el canal al que esta connectat i hem agregat la llibreria 'MFRC522'. També hem definit els pins del RST i el SS.
 
 ```
 
@@ -195,7 +228,7 @@ Les llibreries necessaries per utilitzar el lector eren la SPI, ja que es el can
 
 ```
 
-Pel WiFi hem agregat la llibreria de wifi i hem iniciat les constants del wifi i la contrasenya:
+Pel WiFi hem utilitzat la llibreria de wifi i hem iniciat les constants del wifi i la contrasenya:
 
 ```
 // Wifi
@@ -203,7 +236,7 @@ Pel WiFi hem agregat la llibreria de wifi i hem iniciat les constants del wifi i
 const char* ssid = "iPhone de Sonia";
 const char* password = "sonia123";
 ```
-Per la pagina web hem afegit la llibreria WebServer i hem inicialitzat el server:
+Per la pagina web hem utilitzat la llibreria WebServer i hem inicialitzat el server:
 
 ```
 // Pagina web
@@ -211,11 +244,23 @@ Per la pagina web hem afegit la llibreria WebServer i hem inicialitzat el server
 WebServer server(80);
 
 ```
-Finalment, pel zumbador hem agregat la llibreria 'EasyBuzzer':
+Pel zumbador hem utilitzat les llibreries 'FS' i 'SD', i hem definit el pin del zumbador al 2:
 
 ```
-// Zumbador
-#include <EasyBuzzer.h>
+#include <FS.h>
+#include <SD.h>
+#define BUZZER 2
+```
+Finalment, pel display hem agregat les llibreries 'Adafruit GFX Library' i 'Adafruit SSD1306' i hem utilitzat la llibreria 'Wire'. També hem definit les dimensions del display:
+
+```
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+ 
 ```
 
 **Variables:**
@@ -267,7 +312,7 @@ Inicialitzem tots els pins (leds, pulsadors i zumbador)
   pinMode(ledvermell, OUTPUT);
   pinMode (21, INPUT_PULLUP); // boton para abrir la puerta
   pinMode (15, INPUT_PULLUP); // timbre
-  pinMode (2, OUTPUT); // zumbador
+  pinMode (BUZZER, OUTPUT); // zumbador
 ```
 
 Inicialitzarem també el wifi, que anirà imprimint punts fins que es connecti:
@@ -288,7 +333,20 @@ Serial.println(WiFi.localIP()); //Show ESP32 IP on serial
 server.begin();
 server.on("/", handle_root);
 ```
+Incialtzem el Display i especifiquem les seves propietats:
 
+```
+if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println("SSD1306 allocation failed");
+    for(;;);
+  }
+
+  delay(2000);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 10);
+```
 
 tanquem el set up:
 
@@ -309,7 +367,8 @@ byte Usuario1[4]= {0x50, 0x60, 0x13, 0x4E} ; //código del usuario 1
 Primer crearem dues variables per a llegir el timbre i el botó del conserge
 
 ```
-int timbre = digitalRead (15);
+void loop() {
+  int timbre = digitalRead (15);
   int boto = digitalRead (21);
 ```
 Ara farem un if per cada un dels dos pulsadors per a comprovar si algun d'aquests està sent presionat, el qual cridaria a les seves respectives funcións, les quals programarem més endavant;
@@ -363,12 +422,13 @@ La primera funció es 'picar', la qual simula un timbre, es a dir, en cas de pre
 ```
 // Esta funcion simula un timbre
 void PICAR (){
-  EasyBuzzer.beep (1000, 900000); // frequencia en Hz, duracion del pitido en ms
-  EasyBuzzer.stopBeep();
+  digitalWrite(BUZZER,HIGH);
+  delay(1000);
+  digitalWrite(BUZZER,LOW);
 }
 ```
 
-La següent funcio és 'pasa', que és la que s'activa quan el lector de targetes detecta una targeta correcta. Aquesta funció activa el led verd, escriu pr pantalla que la targeta ha sigut acceptada, i escriu a la pagina web les dades de la targeta entrant:
+La següent funcio és 'pasa', que és la que s'activa quan el lector de targetes detecta una targeta correcta. Aquesta funció activa el led verd, escriu per pantalla que la targeta ha sigut acceptada i pel display "Bienvenido!", i escriu a la pagina web les dades de la targeta entrant:
 
 ```
 // Esta función encendera el led verde y la pagina web
@@ -378,6 +438,11 @@ void PASA (){
   delay(500);               // el deixem ences un moment
   digitalWrite(ledverd, LOW);
   Serial.println("Targeta ACEPTADA");
+  // Escribim pel display
+  display.println("Bienvenido!");
+  display.display();
+   delay(4000);
+  display.clearDisplay(); 
   server.handleClient(); // pag web
 }
 ```
@@ -396,7 +461,7 @@ void COMPARAR(){
  }
 ```
 
-Finalment tenim la funció 'denegado' que és la que s'activa quan el lector de targetes llegeix una targeta incorrecta, en aquest cas s'encendrà un led vermell i es mostrarà per pantalla que la targeta ha sigut denegada:
+Finalment tenim la funció 'denegado' que és la que s'activa quan el lector de targetes llegeix una targeta incorrecta, en aquest cas s'encendrà un led vermell, es mostrarà per pantalla que la targeta ha sigut denegada i s'escriura pel Display "Targeta DENEGADA":
 
 ```
 void DENEGADO (){
@@ -408,6 +473,12 @@ void DENEGADO (){
   // Terminamos la lectura de la tarjeta actual
   mfrc522.PICC_HaltA();
  Serial.println("Targeta DENEGADA");
+ // Escribim pel display
+ display.println("Targeta DENEGADA");
+ display.display();
+ delay(6000);
+  display.clearDisplay(); 
+}
 }
 ```
 
