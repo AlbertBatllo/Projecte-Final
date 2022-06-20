@@ -37,7 +37,7 @@ WebServer server(80);
 // Zumbador
 #include <FS.h>
 #include <SD.h>
-#define BUZZER 2
+#define BUZZER 15
 
 //Display
 #include <Wire.h>
@@ -52,7 +52,7 @@ int ledblanc = 12;
 int ledverd = 13;
 int ledvermell = 14;
 bool correcte = true;
-int zumbador = 2;
+int zumbador = 15;
 MFRC522 mfrc522(SS_PIN, RST_PIN);
  
 // Funciones
@@ -72,7 +72,7 @@ void setup() {
   pinMode(ledverd, OUTPUT);
   pinMode(ledvermell, OUTPUT);
   pinMode (21, INPUT_PULLUP); // boton para abrir la puerta
-  pinMode (15, INPUT_PULLUP); // timbre
+  pinMode (5, INPUT_PULLUP); // timbre
   pinMode (BUZZER, OUTPUT); // zumbador
   // Zumbador
   digitalWrite(BUZZER,HIGH);
