@@ -21,6 +21,7 @@ WebServer server(80);
 
 //Display
 #include <Wire.h>
+#include <Adafruit_I2CDevice.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
