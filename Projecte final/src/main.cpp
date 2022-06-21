@@ -30,7 +30,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // Variables
 int ledblanc = 12;
 int ledverd = 13;
-int ledvermell = 14;
+int ledvermell = 27;
 bool correcte = true;
 int zumbador = 15;
 MFRC522 mfrc522(SS_PIN, RST_PIN);
