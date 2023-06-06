@@ -9,6 +9,7 @@ El nostre projecte consisteix en el funcionament d'un despertador amb llums LED,
 
 ## Diagrama de blocs
 
+![image](https://github.com/AlbertBatllo/Projecte-Final/assets/100155905/96654b81-50cd-4446-a813-441cac2e833d)
 
 ## Esquema de pins
 
