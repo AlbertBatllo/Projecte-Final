@@ -685,44 +685,6 @@ if(botonEstado==LOW){
   audio.stopSong();
   //boton.pressed=false;
   }
-
-
-             
-
-  //pruebas 
- /* if(currentHour < 10){
-    Serial.print("0");
-  Serial.print(currentHour);}
-  else Serial.print(currentHour); 
-  Serial.print(":");
-  if(currentMinute < 10){
-    Serial.print("0");
-  Serial.print(currentMinute);}
-  else Serial.print(currentMinute); 
-  Serial.print(":");
-   if(currentSecond < 10){
-    Serial.print("0");
-  Serial.print(currentSecond);}
-  else Serial.print(currentSecond);    
-  Serial.println("");*/
-  
-
-/*Serial.print(decho);
-Serial.print("  ");
-Serial.print(udho);
-Serial.print("  ");
-Serial.print(decmin);
-Serial.print("  ");
-Serial.print(udmin);
-Serial.println("");*/
-
-
- 
- /*Serial.print(currentMinute);
-  Serial.print(" ");
-  Serial.print(value2);
-  Serial.println("");*/
-
   
 }
   
