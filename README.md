@@ -767,6 +767,8 @@ bool sonando=false;
 
 Ara afegim les variables de la web i la direcció del WiFi
 
+```
+
 //Variables server
 unsigned long currentTime = millis();
 // Previous time
