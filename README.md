@@ -252,14 +252,8 @@ pinMode(boton.PIN, INPUT_PULLUP);
 
    
    server.begin();
-
- 
- 
  
 }
-
-
-
 
 void loop() {
  //server 
@@ -788,7 +782,7 @@ WebServer server(80);
 
 ```
 
- OOOO
+Declararem les següents funcions per a separar la hora en 4 xifres, una per a cada tira de LEDs
  
 ```
 /// Utilitats
@@ -806,7 +800,7 @@ return b;}
 
 ```
 
-** Perifèrics **
+**Perifèrics**
 
 Ara definim a la ESP32 els periferics de la microSD, l'I2S i el botó:
 
@@ -854,6 +848,8 @@ Button boton = {14,false};
   
 }*/
 ```
+
+**HTML**
 
 Ara fem la pagina web a partir de llenguatge HTML, i afegim i fem que es puguin canviar les variables del color i la hora a partir d'aquesta pàgina web:
 ```
@@ -919,7 +915,7 @@ void handleValues() {
 
 **SET UP:**
 
-Al setUp inicialitzem 
+Al setUp inicialitzem tots els objectes i protocols
 
 ```
 
@@ -986,10 +982,159 @@ pinMode(boton.PIN, INPUT_PULLUP);
 }
 ```
 
+**LOOP **
+
+Començarem aconseguint la hora i separant les hores del minuts , també iniciarem el loop de l'audio, pero no tindrem cap arxiu seleccionat
+
+```
+void loop() {
+ //server 
+server.handleClient();
+audio.loop();
+//obtencion de horas
+  timeClient.update();
+int currentHour = timeClient.getHours();
+int currentMinute = timeClient.getMinutes();
+int decmin=de(currentMinute);
+    int udmin=ud(currentMinute);
+    int decho=de(currentHour);
+    int udho=ud(currentHour);
+    
+ ```
+ 
+ A continuació relacionem cada numero amb els LEDs que s'han d'engegar per a mostrar aquest nombre a la tira, aquesta funció la repetirem per a cada tira de LEDs
+ 
+ ```
+ //led Horas dec
+ int ho2;
+if(hantic2 != decho or oR != R or oG != G or oB != B){   
+  ho2=decho;
+ if(ho2==0){
+  h2.clear();
+  h2.setPixelColor(0, h2.Color(R,G,B));
+  h2.setPixelColor(5, h2.Color(R,G,B));
+  h2.setPixelColor(1, h2.Color(R,G,B));
+  h2.setPixelColor(4, h2.Color(R,G,B));
+  h2.setPixelColor(2, h2.Color(R,G,B));
+  h2.setPixelColor(3, h2.Color(R,G,B));
+  h2.show();}
+  else if (ho2==1){
+    h2.clear();
+  h2.setPixelColor(0, h2.Color(R,G,B));
+  h2.setPixelColor(5, h2.Color(R,G,B));  
+  h2.show();
+  }
+   else if (ho2==2){
+    h2.clear();
+  h2.setPixelColor(0, h2.Color(R,G,B));
+  h2.setPixelColor(1, h2.Color(R,G,B));
+  h2.setPixelColor(6, h2.Color(R,G,B));
+  h2.setPixelColor(3, h2.Color(R,G,B)); 
+  h2.setPixelColor(4, h2.Color(R,G,B));
+  h2.show();
+  }
+   else if (ho2==3){
+    h2.clear();
+  h2.setPixelColor(0, h2.Color(R,G,B));
+  h2.setPixelColor(1, h2.Color(R,G,B)); 
+  h2.setPixelColor(6, h2.Color(R,G,B));
+  h2.setPixelColor(5, h2.Color(R,G,B)); 
+  h2.setPixelColor(4, h2.Color(R,G,B));
+  h2.show();
+  }
+   else if (ho2==4){
+  h2.clear();
+  h2.setPixelColor(0, h2.Color(R,G,B));
+  h2.setPixelColor(2, h2.Color(R,G,B));  
+  h2.setPixelColor(6, h2.Color(R,G,B));
+  h2.setPixelColor(5, h2.Color(R,G,B)); 
+  h2.show();
+  }
+  else if (ho2==5){
+    h2.clear();
+  h2.setPixelColor(1, h2.Color(R,G,B));
+  h2.setPixelColor(2, h2.Color(R,G,B));  
+  h2.setPixelColor(6, h2.Color(R,G,B));
+  h2.setPixelColor(5, h2.Color(R,G,B)); 
+  h2.setPixelColor(4, h2.Color(R,G,B));
+  h2.show();
+  }
+  else if (ho2==6){
+    h2.clear();
+  h2.setPixelColor(1, h2.Color(R,G,B));
+  h2.setPixelColor(2, h2.Color(R,G,B));  
+  h2.setPixelColor(6, h2.Color(R,G,B));
+  h2.setPixelColor(3, h2.Color(R,G,B)); 
+  h2.setPixelColor(4, h2.Color(R,G,B));
+  h2.setPixelColor(5, h2.Color(R,G,B));
+  h2.show();
+  }
+   else if (ho2==7){
+    h2.clear();
+  h2.setPixelColor(0, h2.Color(R,G,B));
+  h2.setPixelColor(1, h2.Color(R,G,B)); 
+  h2.setPixelColor(5, h2.Color(R,G,B));
+  h2.show();
+  }
+   else if (ho2==8){
+    h1.clear();
+  h2.setPixelColor(0, h2.Color(R,G,B));
+  h2.setPixelColor(1, h2.Color(R,G,B));
+  h2.setPixelColor(2, h2.Color(R,G,B));
+  h2.setPixelColor(3, h2.Color(R,G,B)); 
+  h2.setPixelColor(4, h2.Color(R,G,B));
+  h2.setPixelColor(5, h2.Color(R,G,B));
+  h2.setPixelColor(6, h2.Color(R,G,B));
+  h2.show();
+  }
+    else if (ho2==9){
+    h2.clear();
+  h2.setPixelColor(0, h2.Color(R,G,B));  
+  h2.setPixelColor(1, h2.Color(R,G,B));
+  h2.setPixelColor(2, h2.Color(R,G,B));  
+  h2.setPixelColor(5, h2.Color(R,G,B));   
+  h2.setPixelColor(6, h2.Color(R,G,B));
+  h2.setPixelColor(4, h2.Color(R,G,B));
+  h2.show();
+  }
+
+    else{h2.clear();}
+ hantic2=ho2;
+ }
+
+oR=R;
+ oG=G;
+ oB=B;
+
+
+
+ int bb = value2-1;
+ 
+ ```
+ 
+ Finalment afegim una funció perquè s'activi la alarma quan la hora concideixi amb la que hem fixat anteriorment, i una per a poder parar aquesta alarma quan s'apreti el botó:
+ 
+ ```
+  if(currentHour==value1 && currentMinute==bb){
+
+audio.connecttoFS(SD,"/alarm.mp3");//abrir archivo mp3
+}
+
+
+int botonEstado = digitalRead(boton.PIN);
+if(botonEstado==LOW){
+  audio.stopSong();
+  //boton.pressed=false;
+  }
+
+ ```
+ 
+
 
 Enllaç del video de youtube de la presentació:
 
-video: https://www.youtube.com/watch?v=GqsDBOWtVCQ
+video: https://www.youtube.com/watch?v=x8LvXa2rD5U
+
 
 
 
