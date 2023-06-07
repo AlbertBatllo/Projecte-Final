@@ -1133,7 +1133,7 @@ if(botonEstado==LOW){
 
 Enllaç del video de youtube de la presentació:
 
-video: https://www.youtube.com/watch?v=x8LvXa2rD5U
+video: [https://www.youtube.com/watch?v=x8LvXa2rD5U](https://www.youtube.com/watch?v=x8LvXa2rD5U)
 
 
 
